@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS staging.joined_tables AS (
     SELECT
         *
     FROM
-        read_csv_auto('data/joined_data.csv')
+        read_csv_auto('data/joined_table.csv')
 );
