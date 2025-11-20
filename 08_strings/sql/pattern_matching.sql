@@ -69,6 +69,6 @@ WHERE
 
 SELECT
     description,
-    regexp_replace (description, ' +', ' ', 'g') AS cleaned_description
+    regexp_replace (trim(description), ' +', ' ', 'g') AS cleaned_description
 FROM
     staging.sql_glossary;
