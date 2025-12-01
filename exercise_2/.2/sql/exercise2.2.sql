@@ -1,6 +1,6 @@
 /* =========================================
-SETUP: Koppla in Sakila-databasen
-========================================= */
+ SETUP: Koppla in Sakila-databasen
+ ========================================= */
 -- 1. Skapa din arbetsyta (Schema)
 -- Schemat 'staging' fungerar som en mapp där vi kan lägga våra tabeller.
 CREATE SCHEMA IF NOT EXISTS staging;
@@ -17,14 +17,14 @@ LOAD sqlite;
 CALL sqlite_attach ('../data/sqlite-sakila.db');
 
 /* =========================================
-VERIFIERING: Kolla att det funkar
-========================================= */
+ VERIFIERING: Kolla att det funkar
+ ========================================= */
 -- Lista alla tabeller vi har tillgång till nu (t.ex. actor, film, customer)
 SHOW ALL TABLES;
 
 /* =========================================
-ÖVNING A: Enkel filtrering
-========================================= */
+ ÖVNING A: Enkel filtrering
+ ========================================= */
 -- Hämta alla kunder vars förnamn börjar på 'G'
 SELECT
     *
@@ -35,8 +35,8 @@ WHERE
 
 -- % betyder "vad som helst efter G"
 /* =========================================
-ÖVNING B: Mängdoperationer (Union)
-========================================= */
+ ÖVNING B: Mängdoperationer (Union)
+ ========================================= */
 -- Räkna hur många gånger "ann" förekommer i namn hos både kunder och skådisar.
 SELECT
     COUNT(*) as name_ann -- Räkna totalen av den sammanslagna listan
@@ -49,7 +49,8 @@ FROM
             sakila.main.actor
         WHERE
             first_name ILIKE '%ann%' -- ILIKE hittar både 'Ann', 'ANN' och 'Susanna'
-        UNION ALL -- Slå ihop listorna (ALL behåller dubbletter, viktigt här!)
+        UNION
+        ALL -- Slå ihop listorna (ALL behåller dubbletter, viktigt här!)
         -- Del 2: Hitta kunder
         SELECT
             first_name
@@ -60,8 +61,8 @@ FROM
     );
 
 /* =========================================
-ÖVNING C: Joins (Kedjan)
-========================================= */
+ ÖVNING C: Joins (Kedjan)
+ ========================================= */
 -- Ta reda på var kunderna bor (Stad och Land).
 -- Vi måste hoppa: Customer -> Address -> City -> Country
 SELECT
@@ -70,15 +71,14 @@ SELECT
     ci.city,
     co.country
 FROM
-    sakila.main.customer c
-    -- USING är genvägen när kolumnen heter samma sak i båda tabellerna (t.ex. address_id)
+    sakila.main.customer c -- USING är genvägen när kolumnen heter samma sak i båda tabellerna (t.ex. address_id)
     LEFT JOIN sakila.main.address a USING (address_id)
     LEFT JOIN sakila.main.city ci USING (city_id)
     LEFT JOIN sakila.main.country co USING (country_id);
 
 /* =========================================
-ÖVNING C (ALTERNATIV): Med ON-syntax
-========================================= */
+ ÖVNING C (ALTERNATIV): Med ON-syntax
+ ========================================= */
 -- Exakt samma resultat som ovan, men med den manuella syntaxen.
 -- Detta är bra att kunna om kolumnerna heter olika (t.ex. id och customer_ref).
 SELECT
@@ -87,15 +87,14 @@ SELECT
     ci.city,
     co.country
 FROM
-    sakila.main.customer c
-    -- Här pekar vi manuellt: c.id ska matcha a.id
+    sakila.main.customer c -- Här pekar vi manuellt: c.id ska matcha a.id
     LEFT JOIN sakila.main.address a ON c.address_id = a.address_id
     LEFT JOIN sakila.main.city ci ON a.city_id = ci.city_id
     LEFT JOIN sakila.main.country co ON ci.country_id = co.country_id;
 
 /* =========================================
-ÖVNING D: Filtrering på Joinad data
-========================================= */
+ ÖVNING D: Filtrering på Joinad data
+ ========================================= */
 -- Samma lista som ovan, men vi vill bara se personer med initialerna J.D.
 SELECT
     c.first_name,
@@ -113,8 +112,8 @@ WHERE
 
 -- OCH slutar på D
 /* =========================================
-ÖVNING E: Den långa vägen (Many-to-Many)
-========================================= */
+ ÖVNING E: Den långa vägen (Many-to-Many)
+ ========================================= */
 -- Vilka filmer har kunderna hyrt?
 -- Det finns ingen direkt koppling mellan Kund och Film.
 -- Vi måste gå via: Rental (Uthyrning) -> Inventory (Lagerhyllan).
@@ -132,17 +131,17 @@ ORDER BY
     c.last_name;
 
 /* =========================================
-ÖVNING F: Aggregering (Topplista)
-========================================= */
+ ÖVNING F: Aggregering (Topplista)
+ ========================================= */
 -- Vilken skådis har gjort flest filmer inom varje genre?
 SELECT
     a.first_name,
     a.last_name,
-    c.name AS genre, -- Kategori-namnet (t.ex. Horror, Action)
+    c.name AS genre,
+    -- Kategori-namnet (t.ex. Horror, Action)
     COUNT(*) AS total_movies -- Räkna hur många rader vi hittar
 FROM
-    sakila.main.actor a
-    -- Genvägen förbi 'film'-tabellen (eftersom film_category har film_id!)
+    sakila.main.actor a -- Genvägen förbi 'film'-tabellen (eftersom film_category har film_id!)
     LEFT JOIN sakila.main.film_actor fa USING (actor_id)
     LEFT JOIN sakila.main.film_category fc USING (film_id)
     LEFT JOIN sakila.main.category c USING (category_id)
@@ -154,3 +153,23 @@ ORDER BY
     total_movies DESC;
 
 -- Vinnaren hamnar överst
+-- Chefen vill skicka ut en rabattkod, men bara till de 5 kunder som har spenderat mest pengar totalt i videobutiken.
+-- Kundens förnamn, efternamn, email.
+Den totala summan de har handlat för
+SELECT
+    c.first_name,
+    c.last_name,
+    c.email,
+    SUM(p.amount) as total_spent,
+    COUNT(*)
+FROM
+    sakila.main.customer c
+    LEFT JOIN sakila.main.payment p USING (customer_id)
+GROUP BY
+    c.first_name,
+    c.last_name,
+    c.email
+ORDER BY
+    total_spent DESC
+LIMIT
+    5;
