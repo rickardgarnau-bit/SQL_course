@@ -42,7 +42,8 @@ FROM
 WHERE
     a.first_name LIKE 'J%'
     And a.last_name LIKE 'D%'
-UNION ALL -- UNION ALL includes all duplicates
+UNION ALL -- UNION ALL includes all duplicates. Useful because there could be both
+-- a customer and an actor with the same name, UNION would only show one
 SELECT
     'customer' AS "type",
     c.first_name,

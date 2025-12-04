@@ -97,4 +97,4 @@ FROM
 WHERE
     final_price > 10000000;
 
--- k) Feel free to explore anything else you find interesting in this dataset.CREATE TABLE
+-- k) Feel free to explore anything else you find interesting in this dataset.
