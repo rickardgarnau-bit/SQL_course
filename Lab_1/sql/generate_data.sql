@@ -65,7 +65,84 @@ LIMIT
 
 -- f) Now it's time for you to choose your own question to explore the sakila database! Write down 3-5 questions you want to answer and then answer them using pandas and duckdb.
 -- Which actor has appeared in the most movies within each genre?
+SELECT
+    a.first_name,
+    a.last_name,
+    c.name AS genre,
+    COUNT(*) AS total_movies
+FROM
+    sakila.main.actor a
+    LEFT JOIN sakila.main.film_actor fa USING (actor_id)
+    LEFT JOIN sakila.main.film_category fc USING (film_id)
+    LEFT JOIN sakila.main.category c USING (category_id)
+GROUP BY
+    a.first_name,
+    a.last_name,
+    genre
+ORDER BY
+    total_movies DESC
+LIMIT
+    5;
+
 -- Which top 5 countries have the most registered customers?
+SELECT
+    co.country,
+    COUNT(customer_id) AS total_customers
+FROM
+    sakila.main.customer c
+    LEFT JOIN sakila.main.address USING (address_id)
+    LEFT JOIN sakila.main.city ci USING (city_id)
+    LEFT JOIN sakila.main.country co USING (country_id)
+GROUP BY
+    co.country
+ORDER BY
+    total_customers DESC
+LIMIT
+    5;
+
 -- Which movie rating has generated the most total sales revenue?
+SELECT
+    f.rating,
+    SUM(amount) as total_sales
+FROM
+    sakila.main.film f
+    LEFT JOIN sakila.main.inventory i USING (film_id)
+    LEFT JOIN sakila.main.rental r USING (inventory_id)
+    LEFT JOIN sakila.main.payment p USING (rental_id)
+GROUP BY
+    f.rating
+ORDER BY
+    total_sales DESC;
+
 -- Which staff member is the 'Employee of the Month' based on total processed payments?
+SELECT
+    s.staff_id,
+    s.first_name,
+    s.last_name,
+    SUM(amount) as total_sales
+FROM
+    sakila.main.staff s
+    LEFT JOIN sakila.main.payment p USING (staff_id)
+GROUP BY
+    s.staff_id,
+    s.first_name,
+    s.last_name
+ORDER BY
+    total_sales DESC;
+
 -- On average, which movies do customers keep the longest before returning them?
+SELECT
+    f.title,
+    AVG(return_date - rental_date) as top_movie
+FROM
+    sakila.main.film f
+    LEFT JOIN sakila.main.inventory i USING (film_id)
+    LEFT JOIN sakila.main.rental r USING (inventory_id)
+WHERE
+    r.return_date IS NOT NULL
+GROUP BY
+    f.title
+ORDER BY
+    top_movie DESC
+LIMIT
+    10;
