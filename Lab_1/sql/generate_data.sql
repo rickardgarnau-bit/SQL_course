@@ -12,7 +12,7 @@ WHERE
 ORDER BY
     film_length DESC;
 
--- b) b) Which movies have the word "love" in its title? Show the following columns: title, rating, length, description
+-- b) Which movies have the word "love" in its title? Show the following columns: title, rating, length, description
 SELECT
     title,
     rating,
