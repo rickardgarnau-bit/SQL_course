@@ -1,0 +1,2 @@
+FROM
+    sakila.main.film;
