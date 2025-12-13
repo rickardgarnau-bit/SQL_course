@@ -1,2 +1,4 @@
+SELECT
+    *
 FROM
-    sakila.main.film;
+    film
