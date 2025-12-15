@@ -14,10 +14,8 @@ inventory pricing, customer behavior, revenue generation, and geographic distrib
 These are the movies that customers keep the longest on average, indicating high engagement and rewatchability.
 
 ```sql longest_rent
-SELECT * FROM longest_rent
+SELECT * FROM sakila.longest_rent
 ```
-
-<DataTable data={longest_rent}/>
 
 <BarChart 
     data={longest_rent}
@@ -44,8 +42,6 @@ Our most valuable customers who we should reward with special offers.
 SELECT * FROM sakila.top_customers
 ```
 
-<DataTable data={top_customers}/>
-
 <BarChart 
     data={top_customers} 
     x=full_name 
@@ -68,8 +64,6 @@ suggesting strong customer demand in this category.
 SELECT * FROM sakila.revenue
 ```
 
-<DataTable data={revenue}/>
-
 <BarChart 
     data={revenue}
     x=genre
@@ -89,7 +83,6 @@ with India and China representing our largest customer bases.
 SELECT * FROM sakila.registered_customers
 ```
 
-<DataTable data={registered_customers}/>
 
 <BarChart 
     data={registered_customers}
@@ -110,8 +103,6 @@ customer expectations. With an average film length of 115 minutes and longest at
 ```sql film_stats
 SELECT * FROM sakila.film_stats
 ```
-
-<DataTable data={film_stats}/>
 
 <BarChart 
     data={film_stats}
