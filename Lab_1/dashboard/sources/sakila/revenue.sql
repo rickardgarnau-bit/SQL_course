@@ -11,4 +11,6 @@ FROM
 GROUP BY
     genre
 ORDER BY
-    total_revenue DESC;
+    total_revenue DESC
+LIMIT
+    10
